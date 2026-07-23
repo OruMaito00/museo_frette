@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { smoother } from './gsapSetup';
+import { getSmoother } from './gsapSetup';
 import { splitMap, animatePreviewTexts } from './chars';
 import { getInterpolatedRotation, getCarouselTimeline } from './carousel';
 import { animatePreviewGridIn, animatePreviewGridOut } from './gridItems';
@@ -84,7 +84,7 @@ export const activatePreviewFromCarousel = (
     },
     onComplete: () => {
       unlockUserScroll();
-      smoother.paused(true);
+      getSmoother().paused(true);
     },
     scrollTo: { y: targetY, autoKill: true },
   })
@@ -157,7 +157,7 @@ export const deactivatePreviewToCarousel = (
       delay: 0.7,
       defaults: { duration: 1.3, ease: 'expo' },
       onComplete: () => {
-        smoother.paused(false);
+        getSmoother().paused(false);
         isAnimating = false;
       },
     })

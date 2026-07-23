@@ -3,7 +3,9 @@ import { render, screen } from '@testing-library/react';
 import App from '../App';
 
 vi.mock('../animations/gsapSetup', () => ({
-  smoother: { kill: vi.fn(), paused: vi.fn() },
+  createSmoother: vi.fn(() => ({ kill: vi.fn(), paused: vi.fn() })),
+  getSmoother: vi.fn(() => ({ kill: vi.fn(), paused: vi.fn() })),
+  killSmoother: vi.fn(),
 }));
 
 vi.mock('../utils/preloadImages', () => ({

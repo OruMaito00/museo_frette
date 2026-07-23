@@ -17,13 +17,19 @@ import {
   deactivatePreviewToCarousel,
   resetIsAnimating,
 } from './animations/transitions';
-import { smoother } from './animations/gsapSetup';
+import { createSmoother, killSmoother } from './animations/gsapSetup';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const App: React.FC = () => {
   useEffect(() => {
     let cancelled = false;
     const onResize = () => ScrollTrigger.refresh();
+
+    // The DOM (#smooth-wrapper / #smooth-content) exists at this point, so the
+    // smoother binds to the correct elements. It must exist before any
+    // ScrollTrigger is created so they pick up the proper scroller defaults,
+    // and before the data-speed effects scan runs.
+    createSmoother();
 
     const init = () => {
       if (cancelled) return;
@@ -45,7 +51,7 @@ const App: React.FC = () => {
       revertAllSplits();
       killAllCarousels();
       ScrollTrigger.getAll().forEach((t) => t.kill());
-      smoother.kill();
+      killSmoother();
       resetIsAnimating();
       window.removeEventListener('resize', onResize);
     };
