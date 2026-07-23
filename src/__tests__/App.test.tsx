@@ -36,6 +36,10 @@ vi.mock('../animations/transitions', async () => {
   };
 });
 
+vi.mock('../animations/previewScene', () => ({
+  disposeActiveScene: vi.fn(),
+}));
+
 vi.mock('gsap/ScrollTrigger', () => ({
   ScrollTrigger: { getAll: vi.fn(() => []), refresh: vi.fn() },
 }));

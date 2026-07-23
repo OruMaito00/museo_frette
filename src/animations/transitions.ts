@@ -3,7 +3,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getSmoother } from './gsapSetup';
 import { splitMap, animatePreviewTexts } from './chars';
 import { getInterpolatedRotation, getCarouselTimeline } from './carousel';
-import { animatePreviewGridIn, animatePreviewGridOut } from './gridItems';
+import { showPreviewScene, hidePreviewScene } from './previewScene';
+import { scenes } from '../data/scenes';
 import { lockUserScroll, unlockUserScroll } from './scrollLock';
 
 let isAnimating = false;
@@ -120,14 +121,18 @@ export const activatePreviewFromCarousel = (
       const preview = document.querySelector(previewSelector);
       if (!preview) return;
       gsap.set(preview, { pointerEvents: 'auto', autoAlpha: 1 });
-      animatePreviewGridIn(preview);
+      const stage = preview.querySelector('.preview__stage') as HTMLElement | null;
+      const sceneData = scenes.find((s) => s.id === preview.id);
+      if (stage && sceneData) {
+        showPreviewScene(stage, sceneData.gridItems);
+      }
       animatePreviewTexts(preview, 'in');
     }, '<+=1.9');
 };
 
-export const deactivatePreviewToCarousel = (
+export const deactivatePreviewToCarousel = async (
   e: React.MouseEvent<HTMLButtonElement>
-): void => {
+): Promise<void> => {
   if (isAnimating) return;
   isAnimating = true;
 
@@ -142,7 +147,8 @@ export const deactivatePreviewToCarousel = (
   }
 
   animatePreviewTexts(preview, 'out');
-  animatePreviewGridOut(preview);
+  await hidePreviewScene();
+  gsap.set(preview, { pointerEvents: 'none', autoAlpha: 0 });
 
   const sw = sceneWrapper();
   if (sw) gsap.set(sw, { autoAlpha: 1 });

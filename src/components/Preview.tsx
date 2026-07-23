@@ -1,5 +1,4 @@
 import React from 'react';
-import PreviewGridItem from './PreviewGridItem';
 import type { SceneData } from '../types';
 
 interface PreviewProps {
@@ -18,14 +17,10 @@ const Preview: React.FC<PreviewProps> = ({ data, onClose }) => {
           Close ×
         </button>
       </header>
-      <div className="grid">
+      <div className="preview__stage" />
+      <div className="visually-hidden">
         {data.gridItems.map((item, i) => (
-          <PreviewGridItem
-            key={i}
-            image={item.image}
-            caption={item.caption}
-            captionId={`caption-${data.id}-${i}`}
-          />
+          <span key={i}>{item.caption}</span>
         ))}
       </div>
     </div>

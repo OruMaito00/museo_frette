@@ -14,7 +14,8 @@
     "gsap": "^3.13.0",
     "imagesloaded": "^5.0.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
@@ -22,6 +23,7 @@
     "@types/imagesloaded": "^4.1.6",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "@types/three": "^0.185.1",
     "@vitejs/plugin-react": "^4.4.1",
     "jsdom": "^26.1.0",
     "sass": "^1.87.0",

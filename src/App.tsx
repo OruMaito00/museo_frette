@@ -18,6 +18,7 @@ import {
   resetIsAnimating,
 } from './animations/transitions';
 import { createSmoother, killSmoother } from './animations/gsapSetup';
+import { disposeActiveScene } from './animations/previewScene';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const App: React.FC = () => {
@@ -41,7 +42,7 @@ const App: React.FC = () => {
       window.addEventListener('resize', onResize);
     };
 
-    preloadImages('.grid__item-image').then(() => {
+    preloadImages('.card__face--front').then(() => {
       document.body.classList.remove('loading');
       init();
     });
@@ -53,6 +54,7 @@ const App: React.FC = () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
       killSmoother();
       resetIsAnimating();
+      disposeActiveScene();
       window.removeEventListener('resize', onResize);
     };
   }, []);
