@@ -1,6 +1,6 @@
 # AGENTS.md — museo_frette
 
-On-Scroll 3D Carousel built with **Vite + React 19 + TypeScript + GSAP**.
+On-Scroll 3D Carousel built with **Vite + React 19 + TypeScript + GSAP + Three.js**.
 
 ## Commands
 
@@ -23,9 +23,9 @@ On-Scroll 3D Carousel built with **Vite + React 19 + TypeScript + GSAP**.
 ## Project layout
 
 - `src/main.tsx` → `App.tsx` — single entry point.
-- `src/components/` — `Scene`, `Preview`, `Carousel`, `Card`, `PreviewGridItem`.
-- `src/animations/` — GSAP-driven carousel, scroll, text-split, and transition logic.
-- `src/data/scenes.ts` — hardcoded scene data (currently all scenes reuse `src/assets/img1.webp`).
+- `src/components/` — `Scene`, `Preview`, `Carousel`, `Card`. `Preview` hosts the Three.js stage + UI overlays (detail strip, tag filter chips).
+- `src/animations/` — GSAP-driven carousel/scroll/text-split logic **plus** `previewScene.ts` (imperative Three.js scene manager).
+- `src/data/scenes.ts` — hardcoded scene data with `gridItems: { image, caption, description, tags[] }`.
 - `src/types/index.ts` — shared interfaces (`SceneData`, `GridItemData`).
 
 ## GSAP / animation gotchas
@@ -35,14 +35,28 @@ On-Scroll 3D Carousel built with **Vite + React 19 + TypeScript + GSAP**.
 - Cleanup (`killSmoother`, `killAllCarousels`, `revertAllSplits`, `ScrollTrigger.kill()`) is mandatory in the `useEffect` teardown to avoid memory leaks and broken re-initializations.
 - `ScrollTrigger.refresh()` is wired to `window.resize` in `App.tsx`.
 
+## Three.js / preview gotchas
+
+- **Imperative module, not R3F.** `previewScene.ts` owns the renderer, scene, camera, and OrbitControls lifecycle. React only provides the `.preview__stage` host div.
+- **Click-to-focus:** raycaster on `pointerdown`/`pointerup` with drag guard (ignores drags from OrbitControls). Click a card → camera frames it, others fade. Click empty canvas or press **Escape** → restore.
+- **Tag filter clustering:** `setTagFilter(tag)` toggles matching cards into a compact grid cluster, non-matching fade to `0.05`, and camera frames the group center. Click same tag again → scatter back to `homePosition`.
+- **OrbitControls mode switching:**
+  - Default: left-drag rotates
+  - Tag active: left-drag pans (`mouseButtons.LEFT = THREE.MOUSE.PAN`)
+  - Card focused: all dragging disabled
+  - `syncControlMode()` handles the remap
+- **React ↔ Three bridge:** `previewScene.ts` dispatches `preview:focus`, `preview:blur`, `preview:tag` custom events on the active `.preview` root. `Preview.tsx` listens and updates local state (detail strip, active chip).
+- **Cleanup is critical:** `disposeActiveScene()` kills `raf`, removes listeners, disposes geometries/textures/renderer, resets module-level refs. Called on preview close and App unmount.
+
 ## Testing
 
 - **Vitest** with `jsdom`, globals enabled, and `setupFiles: ./src/setupTests.ts` (config lives in `vite.config.ts`).
 - `src/setupTests.ts` only imports `@testing-library/jest-dom/vitest`.
-- App-level tests (`src/__tests__/App.test.tsx`) **mock all animation modules** (`gsapSetup`, `carousel`, `chars`, `transitions`, `preloadImages`, `ScrollTrigger`). When writing new component tests, follow this pattern — GSAP logic depends on real browser APIs that jsdom does not provide.
+- App-level tests (`src/__tests__/App.test.tsx`) **mock all animation modules** (`gsapSetup`, `carousel`, `chars`, `transitions`, `preloadImages`, `ScrollTrigger`, `previewScene`). When writing new component tests, follow this pattern — GSAP / Three.js depend on real browser APIs that jsdom does not provide.
 
 ## Build / deploy notes
 
 - `tsconfig.json` uses project references (`tsconfig.app.json` for `src`, `tsconfig.node.json` for `vite.config.ts`). Running `tsc -b` from the root compiles both.
 - Output goes to `dist/` (standard Vite). `.gitignore` already ignores it.
 - No CI, no pre-commit hooks, no formatter config in the repo today.
+- Three.js bundles statically (~900 kB JS chunk). The chunk-size warning on build is expected.
