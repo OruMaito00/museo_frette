@@ -1,6 +1,8 @@
 export interface GridItemData {
   image: string;
   caption: string;
+  description: string;
+  tags: string[];
 }
 
 export interface SceneData {

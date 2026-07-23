@@ -38,6 +38,7 @@ vi.mock('../animations/transitions', async () => {
 
 vi.mock('../animations/previewScene', () => ({
   disposeActiveScene: vi.fn(),
+  setTagFilter: vi.fn(),
 }));
 
 vi.mock('gsap/ScrollTrigger', () => ({
