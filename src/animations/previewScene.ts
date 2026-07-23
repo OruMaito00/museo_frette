@@ -16,9 +16,9 @@ function seededRandom(seed: number): number {
   return x - Math.floor(x);
 }
 
-function generatePositions(count: number, spread = 14): THREE.Vector3[] {
+function generatePositions(count: number, spread = 6): THREE.Vector3[] {
   const positions: THREE.Vector3[] = [];
-  const minDist = 3.5;
+  const minDist = 3;
 
   for (let i = 0; i < count; i++) {
     let attempts = 0;
@@ -30,8 +30,8 @@ function generatePositions(count: number, spread = 14): THREE.Vector3[] {
       const sz = seededRandom(i * 19 + attempts + 2);
       pos = new THREE.Vector3(
         (sx - 0.5) * spread * 2,
-        (sy - 0.5) * spread * 1.2,
-        (sz - 0.5) * spread * 1.2
+        (sy - 0.5) * spread * 1.5,
+        (sz - 0.5) * spread * 1.8
       );
       attempts++;
     } while (
@@ -89,7 +89,7 @@ export function showPreviewScene(
     scene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
-    camera.position.z = 16;
+    camera.position.z = 18;
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
