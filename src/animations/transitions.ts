@@ -120,6 +120,14 @@ export const activatePreviewFromCarousel = (
       if (!previewSelector) return;
       const preview = document.querySelector(previewSelector);
       if (!preview) return;
+
+      // Ensure only the target preview is visible
+      document.querySelectorAll('.preview').forEach((p) => {
+        if (p !== preview) {
+          gsap.set(p, { pointerEvents: 'none', autoAlpha: 0 });
+        }
+      });
+
       gsap.set(preview, { pointerEvents: 'auto', autoAlpha: 1 });
       const stage = preview.querySelector('.preview__stage') as HTMLElement | null;
       const sceneData = scenes.find((s) => s.id === preview.id);
@@ -137,7 +145,10 @@ export const deactivatePreviewToCarousel = async (
   isAnimating = true;
 
   const preview = e.currentTarget.closest('.preview');
-  if (!preview) return;
+  if (!preview) {
+    isAnimating = false;
+    return;
+  }
 
   const { carousel, cards, chars } = getSceneElementsFromPreview(preview);
 

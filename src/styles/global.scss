@@ -302,6 +302,7 @@ a {
   display: flex;
   flex-direction: column;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 
   &__header {
@@ -386,13 +387,15 @@ a {
     position: absolute;
     bottom: 2rem;
     right: 2rem;
-    z-index: 5;
+    z-index: 10;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     max-width: 320px;
     justify-content: flex-end;
+    align-items: center;
     pointer-events: auto;
+    transform: translateZ(0);
   }
 
   &__filter-tag {
