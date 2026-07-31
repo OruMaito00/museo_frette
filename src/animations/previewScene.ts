@@ -24,6 +24,12 @@ const CARD_HEIGHT = 2.75;
 const DEFAULT_CAMERA_Z = 18;
 const FOV = 60;
 
+// Click-to-focus / restore transition timing. Slow, symmetric ease-in-out so
+// the camera settles instead of snapping.
+const FOCUS_CAMERA_DURATION = 1.6;
+const FOCUS_FADE_DURATION = 1.4;
+const FOCUS_EASE = 'power2.inOut';
+
 function seededRandom(seed: number): number {
   const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
   return x - Math.floor(x);
@@ -220,8 +226,8 @@ function focusCard(card: THREE.Mesh): void {
     const targetOpacity = c === card ? 1 : 0.08;
     gsap.to(c.material as THREE.MeshBasicMaterial, {
       opacity: targetOpacity,
-      duration: 0.6,
-      ease: 'power2.out',
+      duration: FOCUS_FADE_DURATION,
+      ease: FOCUS_EASE,
     });
   });
 
@@ -234,16 +240,16 @@ function focusCard(card: THREE.Mesh): void {
     x: targetPos.x,
     y: targetPos.y,
     z: targetPos.z,
-    duration: 0.9,
-    ease: 'power3.out',
+    duration: FOCUS_CAMERA_DURATION,
+    ease: FOCUS_EASE,
   });
 
   cameraTweenPos = gsap.to(camera.position, {
     x: camPos.x,
     y: camPos.y,
     z: camPos.z,
-    duration: 0.9,
-    ease: 'power3.out',
+    duration: FOCUS_CAMERA_DURATION,
+    ease: FOCUS_EASE,
     onComplete: () => {
       isBusy = false;
     },
@@ -266,8 +272,8 @@ function clearCardFocus(): void {
     }
     gsap.to(c.material as THREE.MeshBasicMaterial, {
       opacity: targetOpacity,
-      duration: 0.6,
-      ease: 'power2.out',
+      duration: FOCUS_FADE_DURATION,
+      ease: FOCUS_EASE,
     });
   });
 
@@ -303,16 +309,16 @@ function clearCardFocus(): void {
     x: targetPos.x,
     y: targetPos.y,
     z: targetPos.z,
-    duration: 0.9,
-    ease: 'power3.out',
+    duration: FOCUS_CAMERA_DURATION,
+    ease: FOCUS_EASE,
   });
 
   cameraTweenPos = gsap.to(camera.position, {
     x: camPos.x,
     y: camPos.y,
     z: camPos.z,
-    duration: 0.9,
-    ease: 'power3.out',
+    duration: FOCUS_CAMERA_DURATION,
+    ease: FOCUS_EASE,
     onComplete: () => {
       isBusy = false;
     },

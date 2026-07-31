@@ -5,9 +5,16 @@ import { splitMap, animatePreviewTexts } from './chars';
 import { getInterpolatedRotation, getCarouselTimeline } from './carousel';
 import { showPreviewScene, hidePreviewScene } from './previewScene';
 import { scenes } from '../data/scenes';
+import type { SceneData } from '../types';
 import { lockUserScroll, unlockUserScroll } from './scrollLock';
 
 let isAnimating = false;
+
+// Preview reveal beats, in seconds on the activation timeline. The 3D stage
+// lands after the header/title so the scene arrives as a second beat.
+const PREVIEW_REVEAL_AT = 2.2;
+const SCENE_APPEAR_DELAY = 0.3;
+const SCENE_FADE_DURATION = 0.6;
 
 const sceneWrapper = (): Element | null =>
   document.querySelector('.scene-wrapper');
@@ -45,6 +52,24 @@ const getSceneElementsFromPreview = (
   );
   const titleEl = titleLink?.closest('.scene__title') ?? null;
   return { ...getSceneElementsFromTitle(titleEl!), titleEl };
+};
+
+const resolvePreviewTarget = (
+  titleEl: Element
+): {
+  preview: Element;
+  stage: HTMLElement | null;
+  gridItems: SceneData['gridItems'] | null;
+} | null => {
+  const previewSelector = titleEl.querySelector('a')?.getAttribute('href');
+  if (!previewSelector) return null;
+  const preview = document.querySelector(previewSelector);
+  if (!preview) return null;
+  return {
+    preview,
+    stage: preview.querySelector('.preview__stage') as HTMLElement | null,
+    gridItems: scenes.find((s) => s.id === preview.id)?.gridItems ?? null,
+  };
 };
 
 export const activatePreviewFromCarousel = (
@@ -116,26 +141,32 @@ export const activatePreviewFromCarousel = (
     )
     .to(cards, { rotationZ: 0 }, 0)
     .add(() => {
-      const previewSelector = titleEl.querySelector('a')?.getAttribute('href');
-      if (!previewSelector) return;
-      const preview = document.querySelector(previewSelector);
-      if (!preview) return;
+      const target = resolvePreviewTarget(titleEl);
+      if (!target) return;
 
       // Ensure only the target preview is visible
       document.querySelectorAll('.preview').forEach((p) => {
-        if (p !== preview) {
+        if (p !== target.preview) {
           gsap.set(p, { pointerEvents: 'none', autoAlpha: 0 });
         }
       });
 
-      gsap.set(preview, { pointerEvents: 'auto', autoAlpha: 1 });
-      const stage = preview.querySelector('.preview__stage') as HTMLElement | null;
-      const sceneData = scenes.find((s) => s.id === preview.id);
-      if (stage && sceneData) {
-        showPreviewScene(stage, sceneData.gridItems);
-      }
-      animatePreviewTexts(preview, 'in');
-    }, '<+=1.9');
+      gsap.set(target.preview, { pointerEvents: 'auto', autoAlpha: 1 });
+      // Hold the stage back — it fades in on its own beat below
+      if (target.stage) gsap.set(target.stage, { autoAlpha: 0 });
+      animatePreviewTexts(target.preview, 'in');
+    }, PREVIEW_REVEAL_AT)
+    .add(() => {
+      const target = resolvePreviewTarget(titleEl);
+      if (!target?.stage || !target.gridItems) return;
+
+      showPreviewScene(target.stage, target.gridItems);
+      gsap.to(target.stage, {
+        autoAlpha: 1,
+        duration: SCENE_FADE_DURATION,
+        ease: 'power2.out',
+      });
+    }, PREVIEW_REVEAL_AT + SCENE_APPEAR_DELAY);
 };
 
 export const deactivatePreviewToCarousel = async (
