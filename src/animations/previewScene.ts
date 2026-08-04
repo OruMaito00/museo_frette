@@ -19,8 +19,16 @@ let isBusy = false;
 let cameraTweenTarget: gsap.core.Tween | null = null;
 let cameraTweenPos: gsap.core.Tween | null = null;
 
-const CARD_WIDTH = 2.2;
+// Matches the ~0.62 portrait ratio of the plaid photography, so the texture
+// maps onto the plane without stretching.
+const CARD_WIDTH = 1.7;
 const CARD_HEIGHT = 2.75;
+
+// Multiplies the (already correctly sRGB-decoded) card texture so the plaids
+// read brighter against the dark stage backdrop. Values above 1 overexpose;
+// tune to taste. Scoped to the material, not the renderer, so the near-black
+// clear color behind the cards stays untouched.
+const CARD_BRIGHTNESS = 1.25;
 const DEFAULT_CAMERA_Z = 18;
 const FOV = 60;
 
@@ -371,8 +379,10 @@ export function showPreviewScene(
     cards = gridItems.map((item, i) => {
       const geometry = new THREE.PlaneGeometry(CARD_WIDTH, CARD_HEIGHT);
       const texture = textureLoader.load(item.image);
+      texture.colorSpace = THREE.SRGBColorSpace;
       const material = new THREE.MeshBasicMaterial({
         map: texture,
+        color: new THREE.Color(CARD_BRIGHTNESS, CARD_BRIGHTNESS, CARD_BRIGHTNESS),
         transparent: true,
         opacity: 0,
         side: THREE.DoubleSide,

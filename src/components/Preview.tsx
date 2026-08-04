@@ -54,7 +54,7 @@ const Preview: React.FC<PreviewProps> = ({ data, onClose }) => {
           <span>{data.title}</span>
         </h2>
         <button className="preview__close" onClick={onClose}>
-          Close ×
+          Chiudi ×
         </button>
       </header>
       <div className="preview__stage" />

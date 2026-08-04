@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from '../App';
+import { scenes } from '../data/scenes';
 
 vi.mock('../animations/gsapSetup', () => ({
   createSmoother: vi.fn(() => ({ kill: vi.fn(), paused: vi.fn() })),
@@ -48,20 +49,11 @@ vi.mock('gsap/ScrollTrigger', () => ({
 describe('App', () => {
   it('renders all 6 scenes with titles', () => {
     render(<App />);
-    expect(screen.getAllByText('Haute Couture Nights — Paris')).toHaveLength(2);
-    expect(
-      screen.getAllByText('Vogue Evolution — New York City')
-    ).toHaveLength(2);
-    expect(
-      screen.getAllByText('Glamour in the Desert — Dubai')
-    ).toHaveLength(2);
-    expect(
-      screen.getAllByText('Chic Couture Runway — Milan')
-    ).toHaveLength(2);
-    expect(screen.getAllByText('Style Showcase — London')).toHaveLength(2);
-    expect(
-      screen.getAllByText('Future Fashion Forward — Tokyo')
-    ).toHaveLength(2);
+    expect(scenes).toHaveLength(6);
+    // Each title appears twice: once in the carousel scene, once in its preview
+    scenes.forEach((scene) => {
+      expect(screen.getAllByText(scene.title)).toHaveLength(2);
+    });
   });
 
   it('renders 6 preview sections', () => {
@@ -78,7 +70,12 @@ describe('App', () => {
 
   it('renders a grid caption', () => {
     render(<App />);
-    expect(screen.getByText('Kai Vega')).toBeInTheDocument();
-    expect(screen.getByText('Rylan Ash')).toBeInTheDocument();
+    // Every scene lists the same seven plaids, so each caption appears once per scene
+    expect(screen.getAllByText('Deco 001 — Blu Notte')).toHaveLength(
+      scenes.length
+    );
+    expect(screen.getAllByText('Modernism — Tortora')).toHaveLength(
+      scenes.length
+    );
   });
 });
