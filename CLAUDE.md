@@ -71,6 +71,10 @@ To run a single test file: `npx vitest run src/__tests__/App.test.tsx`. To run t
 
 Issues live as GitHub Issues on `github.com/OruMaito00/museo_frette` (via `gh` CLI). See `docs/agents/issue-tracker.md`.
 
+### Triage labels
+
+Default five-role vocabulary — label strings equal their role names. See `docs/agents/triage-labels.md`.
+
 ### Domain docs
 
 Single-context layout — `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
