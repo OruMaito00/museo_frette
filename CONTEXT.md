@@ -32,6 +32,10 @@ A Plaid alone is not a navigable destination — it exists forty-two times over.
 The single unattended machine in the museum on which this runs. Offline, touchscreen, no operator, months of uptime between reloads.
 _Avoid_: Installation, terminal, station
 
+**Web Demo**:
+The public, online, non-Kiosk presentation of the exhibition, for anyone with a browser. It carries the same collection but none of the Kiosk's unattended-machine behaviour.
+_Avoid_: Production, deployment, live site
+
 **Idle Reset**:
 The return to a clean opening state after a visitor stops interacting — preview closed, Tag cleared, scroll at the top.
 _Avoid_: Timeout, session end, logout

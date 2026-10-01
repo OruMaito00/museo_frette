@@ -35,7 +35,7 @@ To run a single test file: `npx vitest run src/__tests__/App.test.tsx`. To run t
 
 ### GSAP / animation gotchas
 
-- **ScrollSmoother is a premium GSAP plugin.** The project assumes it is available (Club/Business license). Do not swap it out for the free GSAP bundle.
+- **ScrollSmoother and SplitText ship in the public `gsap` npm package** (all GSAP plugins are free since 3.13), so the public repo and Web Demo need no license token. Do not swap them out.
 - `createSmoother()` in `src/animations/gsapSetup.ts` **must** run after React has rendered `#smooth-wrapper` and `#smooth-content` into the DOM. `App.tsx` guards this inside a `useEffect`.
 - Cleanup (`killSmoother`, `killAllCarousels`, `revertAllSplits`, `ScrollTrigger.kill()`) is mandatory in the `useEffect` teardown to avoid memory leaks and broken re-initializations.
 - `ScrollTrigger.refresh()` is wired to `window.resize` in `App.tsx`.
@@ -62,7 +62,9 @@ To run a single test file: `npx vitest run src/__tests__/App.test.tsx`. To run t
 ## Build / deploy notes
 
 - Output goes to `dist/` (standard Vite). `.gitignore` already ignores it.
-- No CI, no pre-commit hooks, no formatter config in the repo today.
+- `vite.config.ts` sets `base: './'` (relative asset URLs), so one `dist/` works on GitHub Pages, at a domain root, and on the offline Kiosk. Do not hardcode `/museo_frette/`.
+- **Web Demo deploy:** `.github/workflows/deploy.yml` runs `npm ci` → `npm test` → `npm run build` on pushes to `main`, PRs and manual dispatch; only `main` deploys to GitHub Pages (repo Settings → Pages → Source: GitHub Actions). See `docs/adr/0004-public-pages-demo-alongside-offline-kiosk.md`.
+- No pre-commit hooks and no formatter config in the repo today.
 - Three.js bundles statically (~900 kB JS chunk). The chunk-size warning on build is expected.
 
 ## Agent skills
